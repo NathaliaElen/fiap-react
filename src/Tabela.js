@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 function Tabela(){
 
     const [usuarios, setUsuarios] = useState([]);
+    const [id,setId] = useState("");
     const [nome,setNome] = useState("");
     const [email,setEmail] = useState("");
     const [senha,setSenha] = useState("");
@@ -37,9 +38,32 @@ function Tabela(){
             alert('Deu certo removi o usuario')
 
             window.location = "";
-            
+
         }).catch( error => console.log(error));
 
+    }
+
+    function atualizarUsuarioApi(){
+
+        let parametros = {
+            name: nome,
+            email: email,
+            password: senha
+        }
+        axios.put('https://iot.14mob.com/api-fiap/public/index.php/users/'+ id, parametros).then(response => {
+            if(response.status == 200){
+                alert('Ebaaaaa deu certo')
+            }else{
+                alert('lascou')
+            }
+        }).catch( error => console.log(error));
+    }
+
+    function atualizarUsuario(usuario){
+        setId(usuario.id);
+        setNome(usuario.name);
+        setEmail(usuario.email);
+        setSenha(usuario.password);
     }
     
   useEffect(() => {
@@ -54,15 +78,19 @@ function Tabela(){
       <div>
         <form className="formulario" onSubmit={event => {
             event.preventDefault();
-            salvarFormulario();
+            if(id != ''){
+                atualizarUsuarioApi()
+            }else{
+                salvarFormulario();
+            }
             return false;
         } } > 
         <label>Nome</label>
-        <input name="name"  onChange={ e => setNome(e.target.value) } />
+        <input name="name" value={ nome }  onChange={ e => setNome(e.target.value) } />
         <label>Email</label>
-        <input name="email" onChange={ e => setEmail(e.target.value) } />
+        <input name="email" value={ email } onChange={ e => setEmail(e.target.value) } />
         <label>senha</label>
-        <input name="password" onChange={ e => setSenha(e.target.value) } />
+        <input name="password" value={ senha } onChange={ e => setSenha(e.target.value) } />
         
         <button type="submit">Enviar</button>
         </form>
@@ -89,6 +117,7 @@ function Tabela(){
                             <td>{usuario.name}</td>
                             <td>{usuario.email}</td>
                             <td>
+                                <button onClick={ event => atualizarUsuario(usuario) } > Editar </button>
                                 <button onClick={ event => removerUsuario(usuario.id) } > Deletar </button>
                             </td>
                             
